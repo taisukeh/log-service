@@ -5,6 +5,9 @@ shared:
     image: golang
     environment:
         GOPATH: /sd/workspace
+        RELEASE_FILE_BASE: logservice
+        OS: linux darwin
+        ARCH: amd64
 
 jobs:
     main:
@@ -52,7 +55,3 @@ jobs:
             - GIT_KEY
             # Pushing releases to GitHub
             - GITHUB_TOKEN
-        environment:
-            RELEASE_FILE_BASE: logservice
-            OS: linux darwin
-            ARCH: amd64
