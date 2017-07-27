@@ -33,7 +33,6 @@ jobs:
                         go build -a -o $RELEASE_FILE_BASE-$GOOS-$GOARCH
                     done
                 done
-            - build: go build -a -o logservice
             - get-bzip2: apt-get update && apt-get install -y --no-install-recommends bzip2
             - tag: ./ci/git-tag.sh
             - release: |
@@ -46,7 +45,6 @@ jobs:
                 # Upload linux binary without suffix
                 cp $RELEASE_FILE_BASE-linux-amd64 $RELEASE_FILE_BASE
                 RELEASE_FILE=$RELEASE_FILE_BASE ./ci/git-release.sh
-            - release: ./ci/git-release.sh
         secrets:
             # Pushing tags to Git
             - GIT_KEY
