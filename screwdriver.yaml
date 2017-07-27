@@ -14,8 +14,10 @@ jobs:
             - gofmt: "find . -name '*.go' | xargs gofmt -s -w"
             - test: go test -race ./...
             - build: |
+                set -x
                 for GOOS in `echo $OS`; do
                     for GOARCH in `echo $ARCH`; do
+                        echo go build -a -o $RELEASE_FILE_BASE-$GOOS-$GOARCH
                         go build -a -o $RELEASE_FILE_BASE-$GOOS-$GOARCH
                         cp $RELEASE_FILE_BASE-$GOOS-$GOARCH $SD_ARTIFACTS_DIR
                     done
