@@ -7,7 +7,7 @@ jobs:
     environment:
       OS: linux darwin
       ARCH: amd64
- steps:
+  steps:
       - checkout
       - run: go get ./...
       - run: go get github.com/mitchellh/gox
