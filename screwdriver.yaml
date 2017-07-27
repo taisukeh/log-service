@@ -5,7 +5,7 @@ shared:
     image: golang
     environment:
         GOPATH: /sd/workspace
-        RELEASE_FILE_BASE: logservice
+        NAME: logservice
         OS: linux darwin
         ARCH: amd64
 
@@ -13,42 +13,30 @@ jobs:
     main:
         steps:
             - get: go get -t ./...
+            - get-gox: go get github.com/mitchellh/gox
             - vet: go vet ./...
             - gofmt: "find . -name '*.go' | xargs gofmt -s -w"
             - test: go test -race ./...
-            - build: |
-                for GOOS in `echo $OS`; do
-                    for GOARCH in `echo $ARCH`; do
-                        go build -a -o $RELEASE_FILE_BASE-$GOOS-$GOARCH
-                        file $RELEASE_FILE_BASE-$GOOS-$GOARCH
-                        cp $RELEASE_FILE_BASE-$GOOS-$GOARCH $SD_ARTIFACTS_DIR
-                    done
-                done
+            - build: gox -os "$OS" -arch "$ARCH" -rebuild -output "dist/$NAME_{{.OS}}_{{.Arch}}"
 
     deploy:
         steps:
             - setup-ci: git clone https://gist.github.com/3d2388b2a7ba658cdcdaffa8cd874e50.git ci
             - get: go get -t ./...
+            - get-gox: go get github.com/mitchellh/gox
             - gofmt: "find . -name '*.go' | xargs gofmt -s -w"
-            - build: |
-                echo $GIT_KEY
-                for GOOS in `echo $OS`; do
-                    for GOARCH in `echo $ARCH`; do
-                        go build -a -o $RELEASE_FILE_BASE-$GOOS-$GOARCH
-                    done
-                done
+            - build: gox -os "$OS" -arch "$ARCH" -rebuild -output "dist/$NAME_{{.OS}}_{{.Arch}}"
             - get-bzip2: apt-get update && apt-get install -y --no-install-recommends bzip2
             - tag: ./ci/git-tag.sh
             - release: |
                 export GITHUB_API=https://git.corp.yahoo.co.jp/api/v3
-                for GOOS in `echo $OS`; do
-                    for GOARCH in `echo $ARCH`; do
-                        RELEASE_FILE=$RELEASE_FILE_BASE-$GOOS-$GOARCH ./ci/git-release.sh
-                    done
+                cd dist
+                for file in `ls`; do
+                  RELEASE_FILE=$file ./ci/git-release.sh
                 done
                 # Upload linux binary without suffix
-                cp $RELEASE_FILE_BASE-linux-amd64 $RELEASE_FILE_BASE
-                RELEASE_FILE=$RELEASE_FILE_BASE ./ci/git-release.sh
+                cp $NAME_linux_amd64 $NAME
+                RELEASE_FILE=$NAME ./ci/git-release.sh
         secrets:
             # Pushing tags to Git
             - GIT_KEY
