@@ -4,9 +4,9 @@ jobs:
     working_directory: /go/src/github.com/taisukeh/log-service
     docker:
       - image: circleci/golang:latest
-        environment:
-           OS: linux darwin
-           ARCH: amd64
+    environment:
+      OS: linux darwin
+      ARCH: amd64
  steps:
       - checkout
       - run: go get ./...
