@@ -1,0 +1,13 @@
+version: 2
+jobs:
+  build:
+    working_directory: /go/src/github.com/taisukeh/log-service
+    docker:
+      - image: circleci/golang:latest
+ steps:
+      - checkout
+      - run: go get ./...
+      - run: go get github.com/mitchellh/gox
+      - run: go get github.com/tcnksm/ghr
+      - run: gox -os "$OS" -arch "$ARCH" -rebuild -output "dist/$NAME_{{.OS}}_{{.Arch}}"
+      - run: ghr -t $GITHUB_TOKEN -u taisukeh -r $CIRCLE_PROJECT_REPONAME --replace `cat release_tag` dist/
