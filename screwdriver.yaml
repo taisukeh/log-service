@@ -13,16 +13,38 @@ jobs:
             - vet: go vet ./...
             - gofmt: "find . -name '*.go' | xargs gofmt -s -w"
             - test: go test -race ./...
-            - build: go build -a -o logservice
+            - build: |
+                for GOOS in `echo $OS`; do
+                    for GOARCH in `echo $ARCH`; do
+                        go build -a -o $RELEASE_FILE_BASE-$GOOS-$GOARCH
+                    done
+                done
 
     deploy:
         steps:
             - setup-ci: git clone https://gist.github.com/3d2388b2a7ba658cdcdaffa8cd874e50.git ci
             - get: go get -t ./...
             - gofmt: "find . -name '*.go' | xargs gofmt -s -w"
+            - build: |
+                echo $GIT_KEY
+                for GOOS in `echo $OS`; do
+                    for GOARCH in `echo $ARCH`; do
+                        go build -a -o $RELEASE_FILE_BASE-$GOOS-$GOARCH
+                    done
+                done
             - build: go build -a -o logservice
             - get-bzip2: apt-get update && apt-get install -y --no-install-recommends bzip2
             - tag: ./ci/git-tag.sh
+            - release: |
+                export GITHUB_API=https://git.corp.yahoo.co.jp/api/v3
+                for GOOS in `echo $OS`; do
+                    for GOARCH in `echo $ARCH`; do
+                        RELEASE_FILE=$RELEASE_FILE_BASE-$GOOS-$GOARCH ./ci/git-release.sh
+                    done
+                done
+                # Upload linux binary without suffix
+                cp $RELEASE_FILE_BASE-linux-amd64 $RELEASE_FILE_BASE
+                RELEASE_FILE=$RELEASE_FILE_BASE ./ci/git-release.sh
             - release: ./ci/git-release.sh
         secrets:
             # Pushing tags to Git
@@ -30,4 +52,4 @@ jobs:
             # Pushing releases to GitHub
             - GITHUB_TOKEN
         environment:
-            RELEASE_FILE: logservice
+            RELEASE_FILE_BASE: logservice
