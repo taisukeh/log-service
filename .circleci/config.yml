@@ -13,4 +13,4 @@ jobs:
       - run: go get github.com/mitchellh/gox
       - run: go get github.com/tcnksm/ghr
       - run: gox -os "$OS" -arch "$ARCH" -rebuild -output "dist/$NAME_{{.OS}}_{{.Arch}}"
-      - run: ghr -t $GITHUB_TOKEN -u taisukeh -r $CIRCLE_PROJECT_REPONAME --replace `cat release_tag` dist/
+      - run: ghr -t $GITHUB_TOKEN -u taisukeh --replace `cat release_tag` dist/
