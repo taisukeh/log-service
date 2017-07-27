@@ -7,6 +7,7 @@ jobs:
     environment:
       OS: linux darwin
       ARCH: amd64
+      NAME: logservice
     steps:
       - checkout
       - run: go get ./...
