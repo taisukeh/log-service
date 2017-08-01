@@ -4,7 +4,7 @@ workflow:
 shared:
     image: golang
     environment:
-        GOPATH: /sd/workspace
+        GOPATH: /sd/workspace2
         NAME: logservice
         OS: linux darwin
         ARCH: amd64
