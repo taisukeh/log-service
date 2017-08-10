@@ -13,7 +13,8 @@ jobs:
             - vet: go vet ./...
             - gofmt: "find . -name '*.go' | xargs gofmt -s -w"
             - test: go test -race ./...
-            - build: go build -a -o logservice
+            - build: curl -sL https://git.io/goreleaser | bash
+            # - build: go build -a -o logservice
 
     deploy:
         steps:
