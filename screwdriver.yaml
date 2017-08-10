@@ -22,7 +22,7 @@ jobs:
             - gofmt: "find . -name '*.go' | xargs gofmt -s -w"
             # - tag: ./ci/git-tag.sh
             - release: |
-                rm ./VERSION
+                # rm -f ./VERSION
                 curl -sL https://git.io/goreleaser | bash
         secrets:
             # Pushing tags to Git
