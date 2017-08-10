@@ -8,3 +8,4 @@ builds:
 
 archive:
   format: binary
+  name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
