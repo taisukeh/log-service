@@ -17,6 +17,9 @@ jobs:
                 rm -f ./VERSION
                 curl -sL https://git.io/goreleaser | bash
             - build: go build -a -o logservice
+        secrets:
+            # Pushing releases to GitHub
+            - GITHUB_TOKEN
 
     deploy:
         steps:
